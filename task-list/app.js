@@ -32,9 +32,7 @@ function getTasks() {
 		tasks = JSON.parse(localStorage.getItem('tasks'));
 	}
 
-	tasks.forEach((task) => {
-		addTasktoUI(task);
-	});
+	tasks.forEach((task) => addTasktoUI(task));
 
 }
 
@@ -47,11 +45,7 @@ function removeTaskFromLocalStorage(taskItem) {
 		tasks = JSON.parse(localStorage.getItem('tasks'));
 	}
 
-	tasks.forEach((task, index) => {
-		if(taskItem.textContent === task) {
-			tasks.splice(index, 1);
-		}
-	});
+	tasks.forEach((task, index) => taskItem.textContent === task && tasks.splice(index, 1));
 
 	localStorage.setItem('tasks', JSON.stringify(tasks));
 }
