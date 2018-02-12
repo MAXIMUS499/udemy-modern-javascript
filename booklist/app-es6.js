@@ -54,6 +54,45 @@ class UI {
   }
 }
 
+// Local Storage class
+class Store {
+	static displayBook() {
+		const books = Store.getBooks();
+
+		books.forEach((book) => {
+			const ui = new UI;
+
+			// Add book to the UI
+			ui.addBookToList(book);
+		});
+	}
+
+	static saveBook(book) {
+		const books = Store.getBooks();
+		books.push(book);
+		localStorage.setItem('books', JSON.stringify(books));
+	}
+
+	static getBooks() {
+		let books;
+		if (localStorage.getItem('books') === null) {
+			books = [];
+		} else {
+			books = JSON.parse(localStorage.getItem('books'));
+		}
+
+		return books;
+	}
+
+	static removeBook(isbn) {
+		const books = Store.getBooks();
+
+		books.forEach((book, index) => book.isbn === isbn && books.splice(index, 1));
+		localStorage.setItem('books', JSON.stringify(books));
+
+	}
+}
+
 // Event listener for add book
 document.querySelector("#book-form").addEventListener("submit", e => {
   e.preventDefault();
@@ -75,7 +114,9 @@ document.querySelector("#book-form").addEventListener("submit", e => {
 		ui.showAlert('Please fill in all fields', 'error');
   } else {
     // Add book to list
-    ui.addBookToList(book);
+		ui.addBookToList(book);
+		// Add to local storage
+		Store.saveBook(book);
     // Clear fields
 		ui.clearFields();
 		// Show OK message
@@ -83,12 +124,17 @@ document.querySelector("#book-form").addEventListener("submit", e => {
   }
 });
 
+// DOM load event
+document.addEventListener('DOMContentLoaded', Store.displayBook);
+
 // Event listener for delete - Event delegation
 document.querySelector('#book-list').addEventListener('click', (e) => {
 	e.preventDefault();
 	  // Instantiate UI
 		const ui = new UI();
 		ui.deleteBook(e.target);
+		// Remove from local storage
+		Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
 		// Show alert
 		ui.showAlert('Book removed!', 'success');
 });
