@@ -19,9 +19,7 @@ function showError(msg) {
 }
 
 // Calculate Results
-function calculateResults(e) {
-	e.preventDefault();
-	
+function calculateResults(e) {	
 	// UI Variables
 	const $amount = document.querySelector('#amount').value;
 	const $interest = document.querySelector('#interest').value;
@@ -42,11 +40,24 @@ function calculateResults(e) {
 		$monthlyPayment.value = monthly.toFixed(2);
 		$totalPayment.value = (monthly * calculatedPayment).toFixed(2);
 		$totalInterest.value = ((monthly * calculatedPayment) - principal).toFixed(2);
+
+		document.querySelector('#results').style.display = 'block';
+		document.querySelector('#loading').style.display = 'none';
 	} else {
+		document.querySelector('#loading').style.display = 'none';
 		showError('Please, check your numbers');
 	}
 
 }
 
 // Listen for submit
-document.querySelector('#loan-form').addEventListener('submit', calculateResults);
+document.querySelector('#loan-form').addEventListener('submit', (e) => {
+	e.preventDefault();
+
+	// Hide results
+	document.querySelector('#results').style.display = 'none';
+
+	// Show loader
+	document.querySelector('#loading').style.display = 'block';
+	setTimeout(calculateResults, 2000);
+});
