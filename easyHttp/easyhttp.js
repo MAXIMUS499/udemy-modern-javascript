@@ -22,15 +22,39 @@ EasyHTTP.prototype.get = function(url, cb) {
 EasyHTTP.prototype.post = function(url, data, cb) {
   this.http.open('POST', url, true);
 
-	this.http.setRequestHeader('Content-type', 'application/json');
+  this.http.setRequestHeader('Content-type', 'application/json');
 
-	this.http.onload = function () {
-		cb(null, this.http.responseText);
-	}.bind(this);
+  this.http.onload = function() {
+    cb(null, this.http.responseText);
+  }.bind(this);
 
   this.http.send(JSON.stringify(data));
 };
 
 // Make an HTTP PUT Request
+EasyHTTP.prototype.put = function(url, data, cb) {
+  this.http.open('PUT', url, true);
+
+  this.http.setRequestHeader('Content-type', 'application/json');
+
+  this.http.onload = function() {
+    cb(null, this.http.responseText);
+  }.bind(this);
+
+  this.http.send(JSON.stringify(data));
+};
 
 // Make an HTTP DELETE Request
+EasyHTTP.prototype.delete = function(url, cb) {
+  this.http.open('DELETE', url, true);
+
+  this.http.onload = function() {
+    if (this.http.status === 200) {
+      cb(null, 'Post deleted');
+    } else {
+      cb(`Error: ${this.http.status}`);
+    }
+  }.bind(this);
+
+  this.http.send();
+};
