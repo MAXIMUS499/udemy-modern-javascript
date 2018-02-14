@@ -31,5 +31,40 @@ class UI {
 			<h3 class="page-heading mb-3">Latest Repos</h3>
 			<div id="repos"</div>
 		`;
-  }
+	}
+	
+	// Clear Profile
+	clearProfile() {
+		this.profile.innerHTML = '';
+	}
+
+	// Clear Alert
+	clearAlert() {
+		const currentAlert = document.querySelector('.alert');
+
+		if (currentAlert) {
+			currentAlert.remove();
+		}
+	}
+
+	// Show alerts
+	showAlert(msg, className) {
+		// Clear any remaining alert
+		this.clearAlert();
+		// Create div
+		const div = document.createElement('div');
+		// Add classes
+		div.className = className;
+		// Add text
+		div.appendChild(document.createTextNode(msg));
+		// Get parent
+		const container = document.querySelector('.searchContainer');
+		// Get search box
+		const search = document.querySelector('.search');
+		// Insert alert
+		container.insertBefore(div, search);
+
+		// Timeout after 3 seconds
+		setTimeout(() => this.clearAlert(), 3000);
+	}
 }
