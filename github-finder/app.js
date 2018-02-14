@@ -32,7 +32,9 @@ searchUser.addEventListener(
           ui.showAlert('User not found', 'alert alert-danger');
         } else {
           // Show profile
-          ui.showProfile(data.profile);
+					ui.showProfile(data.profile);
+					// Show repos
+					ui.showRepos(data.repos);
         }
       });
     } else {
