@@ -59,6 +59,15 @@ const ItemCtrl = (function() {
 
       return data.totalCalories;
     },
+    getItemById: function(id) {
+      return data.items.filter(item => item.id === id)[0];
+    },
+    setCurrentItem: function(item) {
+      data.currentItem = item;
+    },
+    getCurrentItem: function() {
+      return data.currentItem;
+    },
   };
 })();
 
@@ -70,6 +79,9 @@ const UICtrl = (function() {
     itemNameInput: '#item-name',
     itemCaloriesInput: '#item-calories',
     totalCalories: '.total-calories',
+    updateBtn: '.update-btn',
+    deleteBtn: '.delete-btn',
+    backBtn: '.back-btn',
   };
 
   // Public Methods
@@ -133,6 +145,30 @@ const UICtrl = (function() {
         UISelectors.totalCalories,
       ).textContent = totalCalories;
     },
+    clearEditState: function() {
+      UICtrl.clearInput();
+      document.querySelector(UISelectors.updateBtn).style.display = 'none';
+      document.querySelector(UISelectors.deleteBtn).style.display = 'none';
+      document.querySelector(UISelectors.backBtn).style.display = 'none';
+      document.querySelector(UISelectors.addBtn).style.display = 'inline';
+    },
+    addItemToForm: function() {
+      document.querySelector(
+        UISelectors.itemNameInput,
+      ).value = ItemCtrl.getCurrentItem().name;
+
+      document.querySelector(
+        UISelectors.itemCaloriesInput,
+      ).value = ItemCtrl.getCurrentItem().calories;
+
+      UICtrl.showEditState();
+    },
+    showEditState: function() {
+      document.querySelector(UISelectors.updateBtn).style.display = 'inline';
+      document.querySelector(UISelectors.deleteBtn).style.display = 'inline';
+      document.querySelector(UISelectors.backBtn).style.display = 'inline';
+      document.querySelector(UISelectors.addBtn).style.display = 'none';
+    },
   };
 })();
 
@@ -147,6 +183,11 @@ const App = (function(ItemCtrl, UICtrl) {
     document
       .querySelector(UISelectors.addBtn)
       .addEventListener('click', itemAddSubmit);
+
+    // Edit item event
+    document
+      .querySelector(UISelectors.itemList)
+      .addEventListener('click', itemUpdateSubmit);
   };
 
   // Add item submit
@@ -175,9 +216,31 @@ const App = (function(ItemCtrl, UICtrl) {
     }
   };
 
+  // Update item submit
+  const itemUpdateSubmit = function(e) {
+    e.preventDefault();
+
+    if (e.target.classList.contains('edit-item')) {
+      // Get list item id
+      const id = parseInt(e.target.parentNode.parentNode.dataset.id);
+
+      // Get item
+      const itemToEdit = ItemCtrl.getItemById(id);
+
+      // Set current item
+      ItemCtrl.setCurrentItem(itemToEdit);
+
+      // Add item to form
+      UICtrl.addItemToForm();
+    }
+  };
+
   // Public Methods
   return {
     init: function() {
+      // Clear edit state / set initial state
+      UICtrl.clearEditState();
+
       // Fetch Items from Data Structure
       const items = ItemCtrl.getItems();
 
