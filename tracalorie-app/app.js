@@ -68,6 +68,19 @@ const ItemCtrl = (function() {
     getCurrentItem: function() {
       return data.currentItem;
     },
+    updateItem: function(name, calories) {
+      let found = null;
+
+      data.items.forEach(item => {
+        if (item.id === data.currentItem.id) {
+          item.name = name;
+          item.calories = calories;
+          found = item;
+        }
+      });
+
+      return found;
+    },
   };
 })();
 
@@ -82,6 +95,7 @@ const UICtrl = (function() {
     updateBtn: '.update-btn',
     deleteBtn: '.delete-btn',
     backBtn: '.back-btn',
+    listItems: '#item-list li',
   };
 
   // Public Methods
@@ -169,6 +183,24 @@ const UICtrl = (function() {
       document.querySelector(UISelectors.backBtn).style.display = 'inline';
       document.querySelector(UISelectors.addBtn).style.display = 'none';
     },
+    updateListItem: function(item) {
+      let listItems = Array.from(
+        document.querySelectorAll(UISelectors.listItems),
+      );
+
+      listItems.forEach(listItem => {
+        const itemId = parseInt(listItem.dataset.id);
+
+        if (itemId === item.id) {
+          document.querySelector(`[data-id='${item.id}']`).innerHTML = `
+            <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+            <a href="#" class="secondary-content">
+              <i class="edit-item fa fa-pencil"></i>
+            </a>
+          `;
+        }
+      });
+    },
   };
 })();
 
@@ -184,9 +216,22 @@ const App = (function(ItemCtrl, UICtrl) {
       .querySelector(UISelectors.addBtn)
       .addEventListener('click', itemAddSubmit);
 
-    // Edit item event
+    // Disable submit on enter
+    document.addEventListener('keypress', e => {
+      if (e.keyCode === 13 || e.which === 13) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Edit icon click event
     document
       .querySelector(UISelectors.itemList)
+      .addEventListener('click', itemEditClick);
+
+    // Update item event
+    document
+      .querySelector(UISelectors.updateBtn)
       .addEventListener('click', itemUpdateSubmit);
   };
 
@@ -217,7 +262,7 @@ const App = (function(ItemCtrl, UICtrl) {
   };
 
   // Update item submit
-  const itemUpdateSubmit = function(e) {
+  const itemEditClick = function(e) {
     e.preventDefault();
 
     if (e.target.classList.contains('edit-item')) {
@@ -233,6 +278,32 @@ const App = (function(ItemCtrl, UICtrl) {
       // Add item to form
       UICtrl.addItemToForm();
     }
+  };
+
+  // Item update submit
+  const itemUpdateSubmit = function(e) {
+    e.preventDefault();
+
+    // Get item input
+    const input = UICtrl.getItemInput();
+
+    // Update item
+    const updatedItem = ItemCtrl.updateItem(
+      input.name,
+      parseInt(input.calories),
+    );
+
+    // Update the UI
+    UICtrl.updateListItem(updatedItem);
+
+    // Get total Calories
+    const totalCalories = ItemCtrl.getTotalCalories();
+
+    // Add total calories to UI
+    UICtrl.showTotalCalories(totalCalories);
+
+    // Clear State
+    UICtrl.clearEditState();
   };
 
   // Public Methods
