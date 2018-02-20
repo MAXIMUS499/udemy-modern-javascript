@@ -58,8 +58,14 @@ class UI {
   }
 
   clearFields() {
-    this.titleInput = '';
-    this.bodyInput = '';
+    this.titleInput.value = '';
+    this.bodyInput.value = '';
+  }
+
+  fillForm(data) {
+    this.titleInput.value = data.title;
+    this.bodyInput.value = data.body;
+    this.idInput.value = data.id;
   }
 }
 
